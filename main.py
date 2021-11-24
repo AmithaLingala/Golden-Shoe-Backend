@@ -1,9 +1,12 @@
 from flask import Flask,request
+from flask_cors import CORS, cross_origin
 from flask_restful import Api, Resource, reqparse
 from apis.product import Product
 from apis.products import Products
 from models.product_model import db
+
 app = Flask(__name__)
+CORS(app)
  
 api = Api(app) #Flask REST Api code 
  

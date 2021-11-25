@@ -4,15 +4,18 @@ from models.product_model import ProductModel,db
 
 class Product(Resource):
     def get(self,name):
-        product = ProductModel.query.filter_by(name=name).first()
-        if product:
-            return product.json()
+        color= request.args.get('color')
+        products = ProductModel.query.filter_by(name=name,color=color)
+        if products:
+            product = products[0].json()
+            product["sizes"] = [{"size":product.size,"stock":product.stock} for product in products]
+            return product
         return {'message':'product not found'},404
- 
-    def put(self,name):
+
+    def put(self,id):
         data = request.get_json()
  
-        product = ProductModel.query.filter_by(name=name).first()
+        product = ProductModel.query.filter_by(id=id).first()
  
         if product:
             product.price = data["price"]

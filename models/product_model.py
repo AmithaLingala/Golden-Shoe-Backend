@@ -27,6 +27,7 @@ class ProductModel(db.Model):
      
     def json(self):
         return {
+         "id": self.id,
          "name": self.name,
          "price": self.price, 
          "size": self.size, 

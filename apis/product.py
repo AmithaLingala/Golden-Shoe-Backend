@@ -1,14 +1,22 @@
 from flask import request
 from flask_restful import Resource, reqparse
 from models.product_model import ProductModel,db
+import json
 
 class Product(Resource):
     def get(self,name):
-        color= request.args.get('color')
-        products = ProductModel.query.filter_by(name=name,color=color)
-        if products:
+        curColor= request.args.get('color')
+        curSize= request.args.get('size')
+        if curSize:
+            products = ProductModel.query.filter_by(name=name,color=curColor,size=curSize)
+        else:
+            products = ProductModel.query.filter_by(name=name,color=curColor)
+        colorsCursor = db.session.query(ProductModel.color).distinct().filter(ProductModel.name==name).all()
+        colors = [result[0] for result in colorsCursor]
+        if products.count():
             product = products[0].json()
             product["sizes"] = [{"size":product.size,"stock":product.stock} for product in products]
+            product["colors"] = colors
             return product
         return {'message':'product not found'},404
 

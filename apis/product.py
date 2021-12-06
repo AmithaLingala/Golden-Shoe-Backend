@@ -7,14 +7,13 @@ class Product(Resource):
     def get(self,name):
         curColor= request.args.get('color')
         curSize= request.args.get('size')
-        if curSize:
-            products = ProductModel.query.filter_by(name=name,color=curColor,size=curSize)
-        else:
-            products = ProductModel.query.filter_by(name=name,color=curColor)
+        products = ProductModel.query.filter_by(name=name,color=curColor)
         colorsCursor = db.session.query(ProductModel.color).distinct().filter(ProductModel.name==name).all()
         colors = [result[0] for result in colorsCursor]
         if products.count():
-            product = products[0].json()
+            # print(next(filter(lambda product:product.size==int(curSize),products),None))
+            product = products[0] if not curSize else next(filter(lambda product: product.size==int(curSize),products),None)
+            product = product.json()
             product["sizes"] = [{"size":product.size,"stock":product.stock} for product in products]
             product["colors"] = colors
             return product
